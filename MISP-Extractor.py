@@ -31,7 +31,17 @@ searches = {"domains":   [("Network activity",     "domain"  ),
             "snort":     [("Network activity",     "snort"   )],
             "yara":      [("Payload delivery",     "yara"    ),
                           ("Payload installation", "yara"    )]}
+analysis = {0: "Initial",
+            1: "Ongoing",
+            2: "Completed"}
+threat_level = {4: "Undefined",
+                3: "Low",
+                2: "Medium",
+                1: "High"}
 
+#############
+# Functions #
+#############
 def _generateCSV(output):
   # Make CSV in memory
   memoryFile = StringIO()
@@ -71,6 +81,14 @@ def getMISPData(url, key):
 def extractData(entries, to_extract):
   matches = []
   for entry in entries:
+    # Skip entries if not valid
+    if args.T and args.T in threat_level.keys():
+      # If the threat is too low, skip
+      if args.T > int(entry["Event"]["threat_level_id"]): continue
+    if args.A and args.A in analysis.keys():
+      # If the analysis is not far enough, skip
+      if args.A < int(entry["Event"]["analysis"]): continue
+    # Continue
     attrs=entry['Event']['Attribute']
     for attr in attrs:
       for test in to_extract:
@@ -103,16 +121,24 @@ if __name__ == '__main__':
   argParser.add_argument('-s', metavar="Since",     type=str,            help='Max age of the data (ex. 5m, 3h, 7d) "all" will return all')
   argParser.add_argument('-d', metavar="Data type", type=str,            help='Data to look for (domains|hashes|filenames|snort|yara)')
   argParser.add_argument('-t',                      action="store_true", help='Get DataTypes (Debug option')
+  argParser.add_argument('-e',                      action="store_true", help='Get Examples (Debug option')
   argParser.add_argument('-o', metavar="file",      type=str,            help='Output file (default stdout)')
   argParser.add_argument('-H',                      action="store_true", help='Include headers to the output')
   argParser.add_argument('-S', metavar="separator", type=str,            help='Separator for the output (default ",")')
+  argParser.add_argument('-A', metavar="integer",   type=int,            help='Analysis level (0: Initial, 1: Ongoing, 2: Completed)')
+  argParser.add_argument('-T', metavar="integer",   type=int,            help='Threat level (4: Undefined, 3: Low, 2: Medium, 1: High)')
   args = argParser.parse_args()
+
+  if not args.t or args.e or args.d:
+    sys.exit("Please choose an option")
 
   data = getMISPData(url, key)
   
   if args.t:
     import json
     print(json.dumps(getTypes(data), indent=2, sort_keys=True))
+  elif args.e:
+    getExample(data)
   elif args.d:
     search = args.d.lower()
     if search not in searches.keys():
