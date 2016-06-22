@@ -5,7 +5,10 @@ import json
 import os
 import sys
 
-from io import StringIO
+if sys.version_info < (3, 0):
+  from io import BytesIO as memIO
+else:
+  from io import StringIO as memIO
 
 # External packages
 from pymisp import PyMISP
@@ -58,7 +61,7 @@ def _loadSettings():
 
 def _generateCSV(output):
   # Make CSV in memory
-  memoryFile = StringIO()
+  memoryFile = memIO()
   sep = args.S if args.S else ","
   csv_file = csv.writer(memoryFile, delimiter=sep, quotechar='"')
   # Add header if requested
