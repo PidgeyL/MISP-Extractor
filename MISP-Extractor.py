@@ -1,3 +1,12 @@
+#!/usr/bin/env python3.3
+# -*- coding: utf-8 -*-
+#
+# Script to extract datasets from MISP via the API and return them in
+#  CSV format.
+#
+# Software is free software released under the "Modified BSD license"
+#
+# Copyright (c) 2016 	Pieter-Jan Moreels - pieterjan.moreels@gmail.com
 
 # Default Imports
 import csv

@@ -27,3 +27,14 @@ By default, the data is only 5 days old. You can manipulate this using the `-s` 
 
 ### Output
 By default the script outputs to `stdout`. Using the `-o` tag, you can output to a file. The format is CSV, and the separator by default is `,`. You can change the separator by using the `-S` tag. By default, there are no headers to the output. If you want to add them, use the `-H` tag.
+
+##  Usecases
+
+ * Check your proxy logs for possible infected machines
+ * Check hashes of potentially malicious attachments in mails
+ * Analyze your network traffic for suspicious behavior
+
+##  License
+This software is licensed under the "Original BSD License".
+
+    (c) 2015  Pieter-Jan Moreels  https://github.com/pidgeyl
