@@ -69,6 +69,8 @@ def _generateCSV(output):
     csv_file.writerow(["Category", "Type", "Value"])
   # Make CSV file
   for line in output:
+    if isinstance(line[2], unicode):
+      line[2] = line[2].encode("unicode-escape")
     csv_file.writerow(line)
   return memoryFile.getvalue()
 
