@@ -145,7 +145,7 @@ def getTypes(entries):
 
 if __name__ == '__main__':
   import argparse
-  argParser = argparse.ArgumentParser(description='Management interface for adding and deleting users from collaboration groups')
+  argParser = argparse.ArgumentParser(description='Extract information from the MISP API')
   argParser.add_argument('-s', metavar="Since",     type=str,            help='Max age of the data (ex. 5m, 3h, 7d) "all" will return all')
   argParser.add_argument('-d', metavar="Data type", type=str,            help='Data to look for (domains|hashes|filenames|snort|yara)')
   argParser.add_argument('-t',                      action="store_true", help='Get DataTypes (Debug option')
