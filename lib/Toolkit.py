@@ -1,5 +1,6 @@
 import csv
 import os
+import re
 import sys
 
 _runPath = os.path.dirname(os.path.realpath(__file__))
@@ -25,3 +26,25 @@ def generateCSV(data, separator = None, header = None):
       line[2] = line[2].encode("unicode-escape")
     csv_file.writerow(line)
   return memoryFile.getvalue()
+
+def toFullPath(path):
+  return path if os.path.isabs(path) else os.path.join(_runPath, "..", path)
+
+def lifeSpanToMinutes(lifeSpan):
+  split = re.findall('\d+|\D+', lifeSpan)
+  try:
+    if len(split) > 2 or len(split) == 0:
+      raise Exception
+    base = int(split[0])
+    if len(split) == 1:
+      multiplier = 1
+    else:
+      multiplier = (split[1]).strip().lower()
+      if multiplier == "m":   multiplier = 1
+      elif multiplier == "h": multiplier = 60
+      elif multiplier == "d": multiplier = 60 * 24
+      elif multiplier == "w": multiplier = 60 * 24 * 7
+  except Exception as e:
+    print(e)
+    return 1
+  return "%sm"%(base * multiplier)
