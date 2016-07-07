@@ -82,10 +82,10 @@ class MispExtractor():
     matches = []
     for entry in data:
       # Skip entries if not valid
-      if threat_level and threat_level in threat_level.keys():
+      if threat_level and threat_level in self.threat_level.keys():
         # If the threat is too low, skip
         if threat_level > int(entry["Event"]["threat_level_id"]): continue
-      if analysis_level and analysis_level in analysis.keys():
+      if analysis_level and analysis_level in self.analysis.keys():
         # If the analysis is not far enough, skip
         if analysis_level < int(entry["Event"]["analysis"]): continue
       # Continue
