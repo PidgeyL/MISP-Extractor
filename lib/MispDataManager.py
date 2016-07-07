@@ -62,10 +62,21 @@ class MispDataManager():
     self.db.removeData("age <  %s"%oldest)
 
   def execCommandsOnData(self, dataset="all"):
-    # requirements for the regex
-    def esc(i): return i
-    I   = re.IGNORECASE
-    now = datetime.now()
+    def parse(command, entry=None):
+      # requirements for the regex
+      def esc(i): return str(i)
+      I   = re.IGNORECASE
+      now = datetime.now()
+
+      if entry:
+        command=re.compile('%hit%',  I).sub(esc(entry[0]),   command)
+        command=re.compile('%type%', I).sub(esc(entry[1]),   command)
+      command=re.compile('%day%',    I).sub(esc(now.day),    command)
+      command=re.compile('%month%',  I).sub(esc(now.month),  command)
+      command=re.compile('%year%',   I).sub(esc(now.year),   command)
+      command=re.compile('%hour%',   I).sub(esc(now.hour),   command)
+      command=re.compile('%minute%', I).sub(esc(now.minute), command)
+      command=re.compile('%second%', I).sub(esc(now.second), command)
 
     if   dataset == "new": data = self.db.fetchNewData()
     elif dataset == "old": data = self.db.fetchOldData()
@@ -74,23 +85,14 @@ class MispDataManager():
     commands = self.db.getCommands(dataset)
     # Command executed before the list
     if "initial" in commands.keys():
-      subprocess.Popen(commands["initial"], shell=True)
+      subprocess.Popen(parse(commands["initial"]), shell=True)
     # Command on entry basis
     for entry in data:
       if entry[1] in commands.keys():
-        command = commands[entry[1]]
-        command=re.compile('%hit%',    I).sub(esc(entry[0]),   command)
-        command=re.compile('%type%',   I).sub(esc(entry[1]),   command)
-        command=re.compile('%day%',    I).sub(esc(now.day),    command)
-        command=re.compile('%month%',  I).sub(esc(now.month),  command)
-        command=re.compile('%year%',   I).sub(esc(now.year),   command)
-        command=re.compile('%hour%',   I).sub(esc(now.hour),   command)
-        command=re.compile('%minute%', I).sub(esc(now.minute), command)
-        command=re.compile('%second%', I).sub(esc(now.second), command)
-        subprocess.Popen(command, shell=True)
+        subprocess.Popen(parse(commands[entry[1]], entry), shell=True)
     # Command executed after the list
     if "final" in commands.keys():
-      subprocess.Popen(commands["final"], shell=True)
+      subprocess.Popen(parse(commands["final"]), shell=True)
 
 class DatabaseManager():
   def _dbWrapped(funct):
@@ -107,9 +109,10 @@ class DatabaseManager():
   def ensureDB(self):
     db=sqlite3.connect(self.path)
     db.execute('''CREATE TABLE IF NOT EXISTS MispData
-                 (Value  TEXT     PRIMARY KEY,
+                 (Value  TEXT     NOT NULL,
                   Type   TEXT     NOT NULL,
-                  Age    INTEGER  NOT NULL);''')
+                  Age    INTEGER  NOT NULL,
+                  PRIMARY KEY (Value, Type));''')
     db.execute('''CREATE TABLE IF NOT EXISTS Commands
                   (Type     TEXT  NOT NULL,
                    Command  TEXT  NOT NULL,
@@ -182,17 +185,17 @@ class DatabaseManager():
   def storeData(self, db, data):
     def trim_data(data): return [(x[0], x[1]) for x in data]
 
-    cleaned_data=[]
-    old_data=trim_data(self.fetchData())
+    cleaned=[]
+    #old_data=trim_data(self.fetchData())
     now = calendar.timegm(time.gmtime())
     for line in data:
       if( (type(line) is tuple or type(line) is list) and len(line) is 3
            and all([type(x) is str for x in line])):
-        if not any(line[2]==x[0] and line[1]==x[1] for x in old_data):
-          cleaned_data.append((line[2], line[1].lower(), now))
-
+        if not any(line[2]==x[0] and line[1]==x[1] for x in data):
+          if not any(line[2]==x[0] and line[1]==x[1] for x in cleaned):
+            cleaned.append((line[2], line[1].lower(), now))
     db.executemany("""INSERT INTO MispData(Value, Type, Age)
-                                  VALUES (?, ?, ?)""", cleaned_data)
+                                  VALUES (?, ?, ?)""", cleaned)
     db.commit()
 
   @_dbWrapped
