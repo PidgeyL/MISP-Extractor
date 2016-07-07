@@ -77,6 +77,7 @@ class MispDataManager():
       command=re.compile('%hour%',   I).sub(esc(now.hour),   command)
       command=re.compile('%minute%', I).sub(esc(now.minute), command)
       command=re.compile('%second%', I).sub(esc(now.second), command)
+      return command
 
     if   dataset == "new": data = self.db.fetchNewData()
     elif dataset == "old": data = self.db.fetchOldData()

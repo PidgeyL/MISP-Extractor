@@ -84,7 +84,8 @@ class MispExtractor():
       # Skip entries if not valid
       if threat_level and threat_level in self.threat_level.keys():
         # If the threat is too low, skip
-        if threat_level > int(entry["Event"]["threat_level_id"]): continue
+        if threat_level > int(entry["Event"]["threat_level_id"]):
+          continue
       if analysis_level and analysis_level in self.analysis.keys():
         # If the analysis is not far enough, skip
         if analysis_level < int(entry["Event"]["analysis"]): continue
@@ -93,7 +94,10 @@ class MispExtractor():
       for attr in attrs:
         for test in to_extract:
           if attr["category"] == test[0] and attr["type"] == test[1]:
-            matches.append([test[0], test[1], attr["value"]])
+            val = attr["value"]
+            if sys.version_info < (3, 0) and isinstance(val, unicode):
+              val = val.encode("unicode-escape")
+            matches.append([test[0], test[1], val])
     return matches
 
   def getExample(self, entries):
