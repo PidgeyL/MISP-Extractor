@@ -66,7 +66,7 @@ class MispDataManager():
       # requirements for the regex
       def esc(i): return str(i)
       I   = re.IGNORECASE
-      now = datetime.now()
+      now = datetime.datetime.now()
 
       if entry:
         command=re.compile('%hit%',  I).sub(esc(entry[0]),   command)
@@ -183,8 +183,6 @@ class DatabaseManager():
   # Data
   @_dbWrapped
   def storeData(self, db, data):
-    def trim_data(data): return [(x[0], x[1]) for x in data]
-
     cleaned=[]
     #old_data=trim_data(self.fetchData())
     now = calendar.timegm(time.gmtime())
