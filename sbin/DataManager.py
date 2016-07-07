@@ -44,7 +44,7 @@ if __name__ == '__main__':
   elif os.path.isfile(args.db):
     manager = MispDataManager(args.db)
   else:
-    argParser.print_help()
+    ap.print_help()
     sys.exit()
   manager.fetchAndStoreData()
   if not args.U:
