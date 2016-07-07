@@ -11,6 +11,7 @@
 
 # Default Imports
 import calendar
+import datetime
 import math
 import os
 import re
@@ -63,7 +64,8 @@ class MispDataManager():
   def execCommandsOnData(self, dataset="all"):
     # requirements for the regex
     def esc(i): return i
-    I = re.IGNORECASE
+    I   = re.IGNORECASE
+    now = datetime.now()
 
     if   dataset == "new": data = self.db.fetchNewData()
     elif dataset == "old": data = self.db.fetchOldData()
@@ -77,8 +79,14 @@ class MispDataManager():
     for entry in data:
       if entry[1] in commands.keys():
         command = commands[entry[1]]
-        command=re.compile('%hit%',  I).sub(esc(entry[0]), command)
-        command=re.compile('%type%', I).sub(esc(entry[1]), command)
+        command=re.compile('%hit%',    I).sub(esc(entry[0]),   command)
+        command=re.compile('%type%',   I).sub(esc(entry[1]),   command)
+        command=re.compile('%day%',    I).sub(esc(now.day),    command)
+        command=re.compile('%month%',  I).sub(esc(now.month),  command)
+        command=re.compile('%year%',   I).sub(esc(now.year),   command)
+        command=re.compile('%hour%',   I).sub(esc(now.hour),   command)
+        command=re.compile('%minute%', I).sub(esc(now.minute), command)
+        command=re.compile('%second%', I).sub(esc(now.second), command)
         subprocess.Popen(command, shell=True)
     # Command executed after the list
     if "final" in commands.keys():
