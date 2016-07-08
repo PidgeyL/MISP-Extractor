@@ -81,24 +81,28 @@ the datatype with `-t` and the dataset with `-s`. Examples are:
  future.
 
 **Note:** Commands of the type `initial` get executed before iterating
- over the data, `final` commands at the end. All others will be run while
- iterating over the data, if the type matches.
+ over the data, `final` commands at the end. All others will be run
+ while iterating over the data, if the type matches.
 
 **Note:** If you want to only create the database, without pulling the
  data yet, use the `-C` tag
 
 ##### Modifiers
-The commands will have a certain set of modifiers you can use. The current
- supported modiefiers are:
+The commands will have a certain set of modifiers you can use. The
+ current supported modiefiers are:
 
- * `%hit%`    - gets replaced with the data stored (*e.g. zzzch.zapto.org*)
- * `%type%`   - gets replaced with the type of the data (*e.g. hostname*)
+ * `%hit%`    - gets replaced with the data stored
+                (*e.g. zzzch.zapto.org*)
+ * `%type%`   - gets replaced with the type of the data
+                (*e.g. hostname*)
  * `%day%`    - gets replaced with the current day at time of init
  * `%month%`  - gets replaced with the current month at time of init
  * `%year%`   - gets replaced with the current year at time of init
  * `%hour%`   - gets replaced with the current hour at time of init
  * `%minute%` - gets replaced with the current minute at time of init
  * `%second%` - gets replaced with the current second at time of init
+ * `%path%`   - gets replaced with the full path to the folder of the
+                scripts
 
 ####  Using the data
 Once your database is ready, run the same script using only the database

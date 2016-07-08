@@ -64,19 +64,26 @@ class MispDataManager():
   def execCommandsOnData(self, dataset="all"):
     def parse(command, entry=None):
       # requirements for the regex
-      def esc(i): return str(i)
-      I   = re.IGNORECASE
+      def esc(i):  return str(i)
+      def dformat(i): return format(i, "02")
+      
+      def rsub(text, replacement, command):
+        I = re.IGNORECASE
+        return re.compile(text, I).sub(esc(replacement), command)
+
       now = datetime.datetime.now()
 
       if entry:
-        command=re.compile('%hit%',  I).sub(esc(entry[0]),   command)
-        command=re.compile('%type%', I).sub(esc(entry[1]),   command)
-      command=re.compile('%day%',    I).sub(esc(now.day),    command)
-      command=re.compile('%month%',  I).sub(esc(now.month),  command)
-      command=re.compile('%year%',   I).sub(esc(now.year),   command)
-      command=re.compile('%hour%',   I).sub(esc(now.hour),   command)
-      command=re.compile('%minute%', I).sub(esc(now.minute), command)
-      command=re.compile('%second%', I).sub(esc(now.second), command)
+        command=rsub('%hit%',    entry[0],                     command)
+        command=rsub('%type%',   entry[1],                     command)
+      command=rsub(  '%day%',    dformat(now.day),             command)
+      command=rsub(  '%month%',  dformat(now.month),           command)
+      command=rsub(  '%year%',   now.year,                     command)
+      command=rsub(  '%hour%',   dformat(now.hour),            command)
+      command=rsub(  '%minute%', dformat(now.minute),          command)
+      command=rsub(  '%second%', dformat(now.second),          command)
+      command=rsub(  '%path%',   os.path.join(_runPath, ".."), command)
+      
       return command
 
     if   dataset == "new": data = self.db.fetchNewData()
