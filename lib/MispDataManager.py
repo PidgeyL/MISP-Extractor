@@ -191,17 +191,10 @@ class DatabaseManager():
   # Data
   @_dbWrapped
   def storeData(self, db, data):
-    cleaned=[]
-    #old_data=trim_data(self.fetchData())
-    now = calendar.timegm(time.gmtime())
-    for line in data:
-      if( (type(line) is tuple or type(line) is list) and len(line) is 3
-           and all([type(x) is str for x in line])):
-        if not any(line[2]==x[0] and line[1]==x[1] for x in data):
-          if not any(line[2]==x[0] and line[1]==x[1] for x in cleaned):
-            cleaned.append((line[2], line[1].lower(), now))
-    db.executemany("""INSERT INTO MispData(Value, Type, Age)
-                                  VALUES (?, ?, ?)""", cleaned)
+    now   = calendar.timegm(time.gmtime())
+    clean = [(line[2], line[1].lower(), now) for line in data]
+    db.executemany("""INSERT OR IGNORE INTO MispData(Value, Type, Age)
+                                            VALUES (?, ?, ?)""", clean)
     db.commit()
 
   @_dbWrapped
